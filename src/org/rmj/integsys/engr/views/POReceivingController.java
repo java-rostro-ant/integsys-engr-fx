@@ -562,7 +562,6 @@ public class POReceivingController implements Initializable, IFXML {
                         CommonUtils.SetNextFocus(txtField);
                     return;
                 case 50: /*ReferNox*/
-                    poTrans.setTranStat(Combo21.getSelectionModel().getSelectedIndex());
                     if(poTrans.BrowseRecord(lsValue, true)==true){
                         loadRecord();
                         pnEditMode = poTrans.getEditMode();
@@ -573,7 +572,6 @@ public class POReceivingController implements Initializable, IFXML {
                             
                     return;
                 case 51: /*Supplier*/
-                    poTrans.setTranStat(Combo21.getSelectionModel().getSelectedIndex());
                     if(poTrans.BrowseRecord(lsValue, false)== true){
                     loadRecord(); 
                     pnEditMode = poTrans.getEditMode();

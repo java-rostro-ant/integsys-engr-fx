@@ -176,6 +176,9 @@ public class POReturnController implements Initializable, IFXML {
         Combo04.setItems(cUnitType);
         Combo04.getSelectionModel().select(1);
         
+        Combo19.setItems(cTranStat);
+        Combo19.getSelectionModel().select(0);
+        
         pnEditMode = EditMode.UNKNOWN;
         
         clearFields();
@@ -332,6 +335,7 @@ public class POReturnController implements Initializable, IFXML {
         
         switch (lsButton){
             case "btnBrowse":
+                poTrans.setTranStat(Combo19.getSelectionModel().getSelectedIndex());
                 if(poTrans.BrowseRecord(txtField50.getText(), true)==true){
                     loadRecord(); 
                     pnEditMode = poTrans.getEditMode();
@@ -386,9 +390,7 @@ public class POReturnController implements Initializable, IFXML {
                     if (poTrans.openRecord((String) poTrans.getMaster("sTransNox"))){
                         loadRecord(); 
                         psOldRec = (String) poTrans.getMaster("sTransNox");
-                        
-                        if (poTrans.printRecord()) poTrans.closeRecord(psOldRec);
-                        
+                                                
                         pnEditMode = poTrans.getEditMode();
                     } else {
                         clearFields();
@@ -574,7 +576,9 @@ public class POReturnController implements Initializable, IFXML {
                             txtDetail03.setText(psBarCodex);
                             txtDetail80.setText(psDescript);
                             loadDetail();
-                        }
+                        } else
+                            MsgBox.showOk(poTrans.getMessage());
+                        
                         break;
                     case 80:
                         loJSON = poTrans.SearchDetail(pnRow, 3, lsValue, true, false);
@@ -584,7 +588,8 @@ public class POReturnController implements Initializable, IFXML {
                             txtDetail03.setText(psBarCodex);
                             txtDetail80.setText(psDescript);
                             loadDetail();
-                        }
+                        } else
+                            MsgBox.showOk(poTrans.getMessage());
                         break;
                 }
                 break;
@@ -678,6 +683,7 @@ public class POReturnController implements Initializable, IFXML {
     private ObservableList<TableModel> data = FXCollections.observableArrayList();
     ObservableList<String> cUnitType = FXCollections.observableArrayList("Demo", "Regular", "Repo");
     ObservableList<String> cDivision = FXCollections.observableArrayList("Motorcycle", "Mobile Phone", "Hotel", "General");
+    ObservableList<String> cTranStat = FXCollections.observableArrayList("Open", "Closed", "Posted", "Cancelled", "Void");
     
     private int pnIndex = -1;
     private int pnRow = -1;
