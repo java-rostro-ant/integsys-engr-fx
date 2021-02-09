@@ -32,7 +32,6 @@ import org.rmj.appdriver.GRider;
 import org.rmj.appdriver.agent.MsgBox;
 import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
-import org.rmj.purchasing.agent.XMPurchaseOrder;
 import org.rmj.cas.inventory.base.Inventory;
 import org.rmj.cas.parameter.agent.XMInventoryType;
 import org.rmj.cas.parameter.agent.XMTerm;
@@ -41,6 +40,7 @@ import org.rmj.appdriver.agentfx.ui.showFXDialog;
 import org.rmj.appdriver.constants.TransactionStatus;
 import org.rmj.appdriver.constants.UserRight;
 import org.rmj.cas.parameter.agent.XMProject;
+import org.rmj.engr.purchasing.agent.XMPurchaseOrder;
 
 
 public class PurchaseOrderController implements Initializable, IFXML {
@@ -592,8 +592,11 @@ public class PurchaseOrderController implements Initializable, IFXML {
                         txtDetail03.setText(psBarCodex);
                         txtDetail80.setText(psDescript);
                         txtDetail05.setText((String) loJSON.get("nUnitPrce"));
+                    } else {
+                        MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
                     }
                 }
+                
                 loadDetail();
         }
         
@@ -757,10 +760,6 @@ public class PurchaseOrderController implements Initializable, IFXML {
                 case 80: /*Description*/
                     //send the barcode and descript to class if it has no stock id
                     if (poTrans.getDetail(pnRow, "sStockIDx").equals("")){                        
-                        if (txtDetail80.getText().equals("")){
-                            MsgBox.showOk("Description must have a value if stock is not existing.");
-                            return;
-                        }
                         poTrans.setDetail(pnRow, 101, txtDetail80.getText());
                     }
                     break;
@@ -776,7 +775,6 @@ public class PurchaseOrderController implements Initializable, IFXML {
                     }
                     poTrans.setDetail(pnRow, lnIndex, lnValue);
                     break;
-
                 case 5: /*Unit Price*/
                     double loValue = 0;
                     try {

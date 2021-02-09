@@ -112,7 +112,6 @@ public class FoodLedgerController implements Initializable {
         try {
             poRS.first();
             for (int lnCtr = 1; lnCtr <= MiscUtil.RecordCount(poRS); lnCtr++){
-               
                     poRS.absolute(lnCtr);
                     data.add(new TableModel(String.valueOf(lnCtr), 
                                             poRS.getString("dTransact"),

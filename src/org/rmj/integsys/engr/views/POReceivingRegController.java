@@ -40,7 +40,7 @@ import org.rmj.cas.parameter.agent.XMBranch;
 import org.rmj.cas.parameter.agent.XMDepartment;
 import org.rmj.cas.parameter.agent.XMInventoryType;
 import org.rmj.cas.parameter.agent.XMTerm;
-import org.rmj.purchasing.agent.XMPOReceiving;
+import org.rmj.engr.purchasing.agent.XMPOReceiving;
 
 
 public class POReceivingRegController implements Initializable {

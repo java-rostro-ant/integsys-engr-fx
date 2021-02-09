@@ -32,7 +32,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import org.json.simple.JSONObject;
 import org.rmj.appdriver.constants.EditMode;
-import org.rmj.appdriver.constants.TransactionStatus;
 import org.rmj.appdriver.GRider;
 import org.rmj.appdriver.agent.MsgBox;
 import org.rmj.appdriver.agentfx.CommonUtils;
@@ -40,9 +39,9 @@ import org.rmj.appdriver.agentfx.callback.IFXML;
 import org.rmj.cas.inventory.base.Inventory;
 import org.rmj.cas.parameter.agent.XMInventoryType;
 import org.rmj.cas.parameter.agent.XMTerm;
-import org.rmj.purchasing.agent.XMPOReceiving;
 import org.rmj.appdriver.agentfx.callback.IMasterDetail;
 import org.rmj.cas.parameter.agent.XMProject;
+import org.rmj.engr.purchasing.agent.XMPOReceiving;
 
 public class POReceivingController implements Initializable, IFXML {
     @FXML private AnchorPane anchorField;

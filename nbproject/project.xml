@@ -127,14 +127,6 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>cas-purchasing-agent</foreign-project>
-                <artifact-type>jar</artifact-type>
-                <script>build.xml</script>
-                <target>jar</target>
-                <clean-target>clean</clean-target>
-                <id>jar</id>
-            </reference>
-            <reference>
                 <foreign-project>cas-purchasing-base</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
@@ -144,6 +136,14 @@
             </reference>
             <reference>
                 <foreign-project>cas-purchasing-pojo</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+            <reference>
+                <foreign-project>engr-purchasing-agent</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>

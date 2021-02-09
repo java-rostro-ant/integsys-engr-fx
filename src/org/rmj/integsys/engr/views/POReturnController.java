@@ -34,8 +34,8 @@ import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
 import org.rmj.cas.inventory.base.Inventory;
 import org.rmj.cas.parameter.agent.XMInventoryType;
-import org.rmj.purchasing.agent.XMPOReceiving;
-import org.rmj.purchasing.agent.XMPOReturn;
+import org.rmj.engr.purchasing.agent.XMPOReceiving;
+import org.rmj.engr.purchasing.agent.XMPOReturn;
 import org.rmj.appdriver.agentfx.callback.IMasterDetail;
 import org.rmj.cas.parameter.agent.XMProject;
 

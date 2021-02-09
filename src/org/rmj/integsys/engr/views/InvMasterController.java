@@ -29,12 +29,15 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.json.simple.JSONObject;
 import org.rmj.appdriver.constants.EditMode;
 import org.rmj.appdriver.GRider;
+import org.rmj.appdriver.agent.MsgBox;
 import org.rmj.appdriver.agentfx.ShowMessageFX;
 import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
 import org.rmj.cas.inventory.base.InvMaster;
+import org.rmj.cas.parameter.agent.XMProject;
 import org.rmj.integsys.engr.views.child.FoodLedgerController;
 
 public class InvMasterController implements Initializable, IFXML {
@@ -138,12 +141,14 @@ public class InvMasterController implements Initializable, IFXML {
     private Button btnList;
     @FXML
     private TextField txtField29;
+    @FXML
+    private TextField txtField52;
 
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
         poRecord = new InvMaster(poGRider, poGRider.getBranchCode(), false);
+        psProject = poGRider.getBranchCode(); //set the default project to branch code
          
         /*Set action event handler for the buttons*/
         btnBrowse.setOnAction(this::cmdButton_Click);
@@ -155,6 +160,7 @@ public class InvMasterController implements Initializable, IFXML {
         
         txtField50.focusedProperty().addListener(txtField_Focus);
         txtField51.focusedProperty().addListener(txtField_Focus);
+        txtField52.focusedProperty().addListener(txtField_Focus);
         txtOther03.focusedProperty().addListener(txtOther_Focus);
         txtOther04.focusedProperty().addListener(txtOther_Focus);
         txtOther05.focusedProperty().addListener(txtOther_Focus);
@@ -163,6 +169,7 @@ public class InvMasterController implements Initializable, IFXML {
        
         txtField50.setOnKeyPressed(this::txtField_KeyPressed);
         txtField51.setOnKeyPressed(this::txtField_KeyPressed);
+        txtField52.setOnKeyPressed(this::txtField_KeyPressed);
         txtOther03.setOnKeyPressed(this::txtOther_KeyPressed);
         txtOther04.setOnKeyPressed(this::txtOther_KeyPressed);
         txtOther05.setOnKeyPressed(this::txtOther_KeyPressed);
@@ -183,11 +190,9 @@ public class InvMasterController implements Initializable, IFXML {
         Combo24.setItems(cInvStatx);
         Combo24.getSelectionModel().select(1);
         
-        pnEditMode = EditMode.READY;
         txtOther07.setDisable(true);
         
-        clearFields();
-        initButton(pnEditMode);
+        loadProject();
         
         pbLoaded = true;
     }
@@ -219,7 +224,7 @@ public class InvMasterController implements Initializable, IFXML {
                 case 51:
                     if (event.getCode() == F3) lsValue = txtField.getText() + "%";
                     
-                   if (poRecord.SearchInventory(lsValue, true, false)==true){ 
+                    if (poRecord.SearchInventory(lsValue, true, false)==true){ 
                         loadRecord();
                         if(poRecord.getEditMode()==EditMode.ADDNEW){
                             initButton(EditMode.ADDNEW);
@@ -232,7 +237,22 @@ public class InvMasterController implements Initializable, IFXML {
                             txtField51.setText(psDescript);
                             }
                     return;
+                case 52:
+                    if (event.getCode() == F3) lsValue = txtField.getText() + "%";
                     
+                    XMProject instance = new XMProject(poGRider, poGRider.getBranchCode(), true);
+                    
+                    JSONObject loJSON =  instance.searchProject(lsValue, false);
+                    
+                    if (loJSON != null){
+                        psProject = (String) loJSON.get("sProjCode");
+                        poRecord = new InvMaster(poGRider, psProject, false);
+                        loadProject();
+                    } else {
+                        MsgBox.showOk("Unable to load PROJECT.");
+                    }
+                    
+                    break;
                 default:
                     ShowMessageFX.Warning("Please inform MIS Dept.", pxeModuleName, "Text field with index " + lnIndex + " not registered for QuickSearch.");
                     return;
@@ -287,49 +307,52 @@ public class InvMasterController implements Initializable, IFXML {
         
         switch (lsButton){
             case "btnBrowse":
-                
                 switch(pnIndex){
                     case 50: /*sBarcode*/
                         lsValue = txtField50.getText() + "%";
                         
                         if(poRecord.SearchInventory(lsValue, false, false )==true){
                              loadRecord(); 
-                             if(poRecord.getEditMode()==EditMode.ADDNEW){
-                                 initButton(EditMode.ADDNEW);
-                                 }else 
-                                 initButton(EditMode.READY);
-                             }else
-                                 if(!txtField50.getText().equals(psBarcode)){
-                                 clearFields();
-                                 break;
-                                 }else{
-                                     txtField50.setText(psBarcode);
-                                          }
-                                 return;
-
+                             
+                             if(poRecord.getEditMode() == EditMode.ADDNEW)
+                                initButton(EditMode.ADDNEW);
+                             else 
+                                initButton(EditMode.READY);
+                        }
+                        
+                        if(!txtField50.getText().equals(psBarcode)){
+                            clearFields();
+                            break;
+                        } else
+                            txtField50.setText(psBarcode);
+                                                
+                        break;
                     case 51: /*sDescript*/
                         lsValue = txtField51.getText() + "%";
                         
                         if(poRecord.SearchInventory(lsValue, true, false)== true){
                             loadRecord(); 
-                            if(poRecord.getEditMode()==EditMode.ADDNEW){
+                            
+                            if(poRecord.getEditMode()==EditMode.ADDNEW)
                                 initButton(EditMode.ADDNEW);
-                                }else
+                            else
                                 initButton(EditMode.READY);
                         }
+                        
                         if(!txtField51.getText().equals(psDescript)){
                             clearFields();
                             break;
-                        }else{
+                        }else
                             txtField51.setText(psDescript);
-                              }return;
-                    
+                                              
+                        break;
+                    case 52:
+                        break;
                     default:
                       ShowMessageFX.Warning("No Entry", pxeModuleName, "Please have at least one keyword to browse!");
                       txtField51.requestFocus();
                     }
                    return;
-                
             case "btnCancel":
                 if(ShowMessageFX.OkayCancel(null, pxeModuleName, "Do you want to disregard changes?") == true){
                     clearFields();
@@ -372,11 +395,13 @@ public class InvMasterController implements Initializable, IFXML {
                 
             case "btnList":
                 boolean lbShow = (pnEditMode == EditMode.ADDNEW || pnEditMode == EditMode.UPDATE);
+                
                 if (lbShow) return;
+                
                 if (txtField01.getText().equals("")){
                    ShowMessageFX.Error(null, pxeModuleName, "Please select a record first"); 
                    break;
-                }else{                    
+                } else{                    
                     FoodLedgerController foodLedger = new FoodLedgerController();
                     foodLedger.setHistory(poRecord.GetHistory());
                     
@@ -425,7 +450,6 @@ public class InvMasterController implements Initializable, IFXML {
                     }
                 } 
                 break;
-                
             default:
                 ShowMessageFX.Warning(null, pxeModuleName, "Button with name " + lsButton + " not registered.");
                 return;
@@ -441,6 +465,7 @@ public class InvMasterController implements Initializable, IFXML {
         btnSave.setVisible(lbShow);
         txtField50.setDisable(lbShow);
         txtField51.setDisable(lbShow);
+        txtField52.setDisable(lbShow);
         
         txtOther03.setDisable(!lbShow);
         txtOther04.setDisable(!lbShow);
@@ -453,7 +478,7 @@ public class InvMasterController implements Initializable, IFXML {
         
         if(lbShow){
             txtOther03.requestFocus();
-        }else
+        } else
             txtField51.requestFocus();
     }
     
@@ -483,6 +508,7 @@ public class InvMasterController implements Initializable, IFXML {
         txtField29.setText("");
         txtField50.setText("");
         txtField51.setText("");
+        txtField52.setText("");
         
         txtOther03.setText("");
         txtOther04.setText("");
@@ -513,9 +539,25 @@ public class InvMasterController implements Initializable, IFXML {
         psOldRec = "";
         psBarcode = "";
         psDescript = "";
-        psLocation = "";
+        psLocation = "";        
+    }
+    
+    private void loadProject(){
+        clearFields();
+        pnEditMode = EditMode.READY;
+        initButton(pnEditMode);
         
-        pnIndex = 51;
+        XMProject instance = new XMProject(poGRider, poGRider.getBranchCode(), true);
+        
+        if (instance.browseRecord(psProject, true)){
+            txtField52.setText((String) instance.getMaster("sProjDesc"));
+            txtField51.requestFocus(); 
+        } else {
+            MsgBox.showOk("Unable to load project.\n\n" +
+                "Please inform MIS department.");
+            txtField52.setText("");
+            txtField52.requestFocus();
+        }
     }
     
     private void ComboBox_KeyPressed(KeyEvent event){
@@ -614,7 +656,6 @@ public class InvMasterController implements Initializable, IFXML {
     public void setGRider(GRider foGRider){this.poGRider = foGRider;}
     
     private final String pxeModuleName = "InvMasterController";
-    private final String pxeDefaultDte = "1900-01-01";
     private final String pxeDateFormat = "yyyy-MM-dd";
     private final String pxeCurrentDate = java.time.LocalDate.now().toString();
     private static GRider poGRider;
@@ -626,6 +667,8 @@ public class InvMasterController implements Initializable, IFXML {
     
     private String psBarcode= "";
     private String psDescript = "";
+    private String psProject = "";
+    
     private int pnEditMode;
     private int pnIndex = -1;
     private boolean pbLoaded = false;
@@ -646,16 +689,21 @@ public class InvMasterController implements Initializable, IFXML {
             
         if(!nv){ /*Lost Focus*/
             switch (lnIndex){
-                 case 50:
-                   if(txtField.getText().equals("") || txtField.getText().equals("%"))
-                       txtField.setText("");
-                       break;    
-                  
+                case 50:
+                    if(txtField.getText().equals("") || txtField.getText().equals("%"))
+                        txtField.setText("");
+                       
+                   break;    
                 case 51: 
                     if(txtField.getText().equals("") || txtField.getText().equals("%"))
-                       txtField.setText("");
-                       break;
-                    
+                        txtField.setText("");
+                       
+                    break;
+                case 52:
+                    if(txtField.getText().equals("") || txtField.getText().equals("%"))
+                        txtField.setText("");
+                   
+                    break;
                 default:
                     ShowMessageFX.Warning("Please inform MIS Dept.", pxeModuleName, "Text field with name " + txtField.getId() + " not registered.");
             }

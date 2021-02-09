@@ -261,10 +261,8 @@ public class MDIMainController implements Initializable {
 
     @FXML
     private void mnu_InventoryTransferClick(ActionEvent event) throws IOException{
+        setScene(loadAnimate("InvTransfer.fxml"));
     }
-
-
-
 
     @FXML
     private void menu_TransferPostingClick(ActionEvent event)throws IOException {
@@ -527,6 +525,10 @@ public class MDIMainController implements Initializable {
                 return instance;
             case "POReturn":
                 instance = new POReturnController();
+                instance.setGRider(poGRider);
+                return instance;
+            case "InvTransfer":
+                instance = new InvTransferController();
                 instance.setGRider(poGRider);
                 return instance;
             //start of parameter forms
