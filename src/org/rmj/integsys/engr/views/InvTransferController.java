@@ -54,10 +54,9 @@ import org.rmj.appdriver.SQLUtil;
 import org.rmj.appdriver.agent.MsgBox;
 import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
-import org.rmj.cas.inventory.base.InvTransfer;
-import org.rmj.cas.parameter.agent.XMBranch;
 import org.rmj.appdriver.agentfx.callback.IMasterDetail;
 import org.rmj.cas.parameter.agent.XMProject;
+import org.rmj.engr.inventory.base.InvTransfer;
 
 public class InvTransferController implements Initializable, IFXML {
     @FXML
@@ -154,6 +153,16 @@ public class InvTransferController implements Initializable, IFXML {
         
         Combo19.setItems(cTranStat);
         Combo19.getSelectionModel().select(0);
+        Combo19.valueProperty().addListener(new ChangeListener<String>() {
+            @Override public void changed(ObservableValue ov, String t, String t1) {
+                pnEditMode = EditMode.UNKNOWN;
+                
+                clearFields();
+                initGrid();
+                initButton(pnEditMode);
+                txtField51.requestFocus();
+            }    
+        });
         
         pnEditMode = EditMode.UNKNOWN;
         clearFields();
@@ -364,6 +373,7 @@ public class InvTransferController implements Initializable, IFXML {
                             CommonUtils.SetNextFocus(txtField); 
                         break;
                     case 50: /*sTransNox*/
+                        poTrans.setTranStat(Combo19.getSelectionModel().getSelectedIndex());
                         if(poTrans.BrowseRecord(lsValue, true)==true){
                             loadRecord();
                             pnEditMode = poTrans.getEditMode();
@@ -373,6 +383,7 @@ public class InvTransferController implements Initializable, IFXML {
                         }
                         return;
                     case 51: /*psDestina*/
+                        poTrans.setTranStat(Combo19.getSelectionModel().getSelectedIndex());
                         if(poTrans.BrowseRecord(lsValue, false)== true){
                             loadRecord(); 
                             pnEditMode = poTrans.getEditMode();
@@ -436,7 +447,7 @@ public class InvTransferController implements Initializable, IFXML {
                         } else 
                             MsgBox.showOk(poTrans.getErrMsg() + "  " + poTrans.getMessage());
                     } else
-                        MsgBox.showOk("Transaction must be printed before you can confirm it!");
+                        MsgBox.showOk("Transaction might be already processed or unprinted!");
                 } else 
                     MsgBox.showOk("Please select a record to confirm!");
                 
@@ -505,6 +516,7 @@ public class InvTransferController implements Initializable, IFXML {
                             loadRecord(); 
                             pnEditMode = poTrans.getEditMode();
                         }
+                        return;
                     default:
                         txtField51.requestFocus();
                 }
@@ -536,12 +548,12 @@ public class InvTransferController implements Initializable, IFXML {
         XMProject loProject = poTrans.GetProject((String)poTrans.getMaster(2), true);
         if (loProject != null) txtField02.setText((String) loProject.getMaster("sProjDesc"));
         
-        XMBranch loBranch = poTrans.GetBranch((String)poTrans.getMaster(4), true);
-        if (loBranch != null) {
-            txtField04.setText((String) loBranch.getMaster("sBranchNm"));
-            txtField51.setText((String) loBranch.getMaster("sBranchNm"));
+        loProject = poTrans.GetProject((String)poTrans.getMaster(4), true);
+        if (loProject != null) {
+            txtField04.setText((String) loProject.getMaster("sProjDesc"));
+            txtField51.setText((String) loProject.getMaster("sProjDesc"));
         }
-        
+                
         txtField03.setText(SQLUtil.dateFormat((Date) poTrans.getMaster("dTransact"), SQLUtil.FORMAT_MEDIUM_DATE));
         txtField05.setText((String) poTrans.getMaster("sRemarksx"));
         
@@ -935,6 +947,9 @@ public class InvTransferController implements Initializable, IFXML {
             case 4:
                 XMProject loDestinat = poTrans.GetProject((String)poTrans.getMaster("sDestinat"), true);
                 if (loDestinat != null) txtField04.setText((String) loDestinat.getMaster("sProjDesc"));
+                break;
+            case 12:
+                Label12.setText(CommonUtils.NumberFormat(Double.valueOf(poTrans.getMaster("nTranTotl").toString()), "#,##0.00"));
                 break;
         }
     }

@@ -36,7 +36,7 @@ import org.rmj.appdriver.agent.MsgBox;
 import org.rmj.appdriver.agentfx.ShowMessageFX;
 import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
-import org.rmj.cas.inventory.base.InvMaster;
+import org.rmj.engr.inventory.base.InvMaster;
 import org.rmj.cas.parameter.agent.XMProject;
 import org.rmj.integsys.engr.views.child.FoodLedgerController;
 

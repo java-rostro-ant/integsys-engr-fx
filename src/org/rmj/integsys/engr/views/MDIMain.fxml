@@ -65,7 +65,7 @@
                                        <menus>
                                           <Menu fx:id="mnuFiles" mnemonicParsing="false" text="File">
                                              <items>
-                                                <MenuItem fx:id="mnuDashboard" mnemonicParsing="false" onAction="#mnuInventory_Click" text="Dashboard">
+                                                <MenuItem fx:id="mnuDashboard" mnemonicParsing="false" onAction="#mnuDashboard_Click" text="Dashboard">
                                                    <graphic>
                                                       <Button graphicTextGap="2.0" mnemonicParsing="false">
                                                          <graphic>
@@ -259,6 +259,18 @@
                                                             </Button>
                                                          </graphic>
                                                       </MenuItem>
+                                                      <MenuItem fx:id="mnuProject" mnemonicParsing="false" onAction="#mnuProject_Click" text="Projects">
+                                                         <graphic>
+                                                            <Button mnemonicParsing="false">
+                                                               <graphic>
+                                                                  <FontAwesomeIconView glyphName="SEND" size="12" />
+                                                               </graphic>
+                                                               <font>
+                                                                  <Font size="1.0" />
+                                                               </font>
+                                                            </Button>
+                                                         </graphic>
+                                                      </MenuItem>
                                                       <MenuItem fx:id="mnuTerm" mnemonicParsing="false" onAction="#mnuTerm_Click" text="Term">
                                                          <graphic>
                                                             <Button mnemonicParsing="false">
@@ -345,19 +357,7 @@
                                                       </MenuItem>
                                                    </items>
                                                 </Menu>
-                                                <MenuItem fx:id="mnu_InventoryTransfer" mnemonicParsing="false" onAction="#mnu_InventoryTransferClick" text="Inventory Transfer">
-                                                   <graphic>
-                                                      <Button graphicTextGap="2.0" mnemonicParsing="false">
-                                                         <graphic>
-                                                            <FontAwesomeIconView glyphName="TAG" size="14" />
-                                                         </graphic>
-                                                         <font>
-                                                            <Font size="1.0" />
-                                                         </font>
-                                                      </Button>
-                                                   </graphic>
-                                                </MenuItem>
-                                                <MenuItem fx:id="menu_TransferPosting" mnemonicParsing="false" onAction="#menu_TransferPostingClick" text="Inventory Transfer Posting">
+                                                <MenuItem fx:id="mnu_InventoryTransfer" mnemonicParsing="false" onAction="#mnu_InventoryTransferClick" text="Inter-Project Stock Transfer">
                                                    <graphic>
                                                       <Button graphicTextGap="2.0" mnemonicParsing="false">
                                                          <graphic>

@@ -36,7 +36,7 @@ import org.rmj.appdriver.GRider;
 import org.rmj.appdriver.agent.MsgBox;
 import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
-import org.rmj.cas.inventory.base.Inventory;
+import org.rmj.engr.inventory.base.Inventory;
 import org.rmj.cas.parameter.agent.XMInventoryType;
 import org.rmj.cas.parameter.agent.XMTerm;
 import org.rmj.appdriver.agentfx.callback.IMasterDetail;
@@ -163,6 +163,16 @@ public class POReceivingController implements Initializable, IFXML {
         
         Combo21.setItems(cTranStat);
         Combo21.getSelectionModel().select(0);
+        Combo21.valueProperty().addListener(new ChangeListener<String>() {
+            @Override public void changed(ObservableValue ov, String t, String t1) {
+                pnEditMode = EditMode.UNKNOWN;
+        
+                clearFields();
+                initGrid();
+                initButton(pnEditMode);
+                txtField51.requestFocus();
+            }    
+        });
         
         pnEditMode = EditMode.UNKNOWN;
         
@@ -561,6 +571,7 @@ public class POReceivingController implements Initializable, IFXML {
                         CommonUtils.SetNextFocus(txtField);
                     return;
                 case 50: /*ReferNox*/
+                    poTrans.setTranStat(Combo21.getSelectionModel().getSelectedIndex());
                     if(poTrans.BrowseRecord(lsValue, true)==true){
                         loadRecord();
                         pnEditMode = poTrans.getEditMode();
@@ -571,9 +582,10 @@ public class POReceivingController implements Initializable, IFXML {
                             
                     return;
                 case 51: /*Supplier*/
+                    poTrans.setTranStat(Combo21.getSelectionModel().getSelectedIndex());
                     if(poTrans.BrowseRecord(lsValue, false)== true){
-                    loadRecord(); 
-                    pnEditMode = poTrans.getEditMode();
+                        loadRecord(); 
+                        pnEditMode = poTrans.getEditMode();
                     } else {
                         clearFields();
                         pnEditMode = EditMode.UNKNOWN;

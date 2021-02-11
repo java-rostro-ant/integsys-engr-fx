@@ -28,7 +28,7 @@ import org.rmj.appdriver.GRider;
 import org.rmj.appdriver.agentfx.ShowMessageFX;
 import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
-import org.rmj.cas.inventory.base.Inventory;
+import org.rmj.engr.inventory.base.Inventory;
 
 public class InventoryController implements Initializable, IFXML {
     @FXML

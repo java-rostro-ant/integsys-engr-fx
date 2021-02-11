@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.ResourceBundle;
 import javafx.beans.property.ReadOnlyBooleanPropertyBase;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,7 +33,7 @@ import org.rmj.appdriver.GRider;
 import org.rmj.appdriver.agent.MsgBox;
 import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
-import org.rmj.cas.inventory.base.Inventory;
+import org.rmj.engr.inventory.base.Inventory;
 import org.rmj.cas.parameter.agent.XMInventoryType;
 import org.rmj.cas.parameter.agent.XMTerm;
 import org.rmj.appdriver.agentfx.callback.IMasterDetail;
@@ -151,6 +152,16 @@ public class PurchaseOrderController implements Initializable, IFXML {
         
         Combo17.setItems(cTranStat);
         Combo17.getSelectionModel().select(0);
+        Combo17.valueProperty().addListener(new ChangeListener<String>() {
+            @Override public void changed(ObservableValue ov, String t, String t1) {
+                pnEditMode = EditMode.UNKNOWN;
+        
+                clearFields();
+                initGrid();
+                initButton(pnEditMode);
+                txtField51.requestFocus();
+            }    
+        });
         
         pnEditMode = EditMode.UNKNOWN;
         

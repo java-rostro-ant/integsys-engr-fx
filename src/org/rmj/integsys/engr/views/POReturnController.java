@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.ResourceBundle;
 import javafx.beans.property.ReadOnlyBooleanPropertyBase;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,7 +33,7 @@ import org.rmj.appdriver.GRider;
 import org.rmj.appdriver.agent.MsgBox;
 import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
-import org.rmj.cas.inventory.base.Inventory;
+import org.rmj.engr.inventory.base.Inventory;
 import org.rmj.cas.parameter.agent.XMInventoryType;
 import org.rmj.engr.purchasing.agent.XMPOReceiving;
 import org.rmj.engr.purchasing.agent.XMPOReturn;
@@ -178,6 +179,16 @@ public class POReturnController implements Initializable, IFXML {
         
         Combo19.setItems(cTranStat);
         Combo19.getSelectionModel().select(0);
+        Combo19.valueProperty().addListener(new ChangeListener<String>() {
+            @Override public void changed(ObservableValue ov, String t, String t1) {
+                pnEditMode = EditMode.UNKNOWN;
+        
+                clearFields();
+                initGrid();
+                initButton(pnEditMode);
+                txtField51.requestFocus();
+            }    
+        });
         
         pnEditMode = EditMode.UNKNOWN;
         
@@ -516,6 +527,7 @@ public class POReturnController implements Initializable, IFXML {
                     else txtField02.requestFocus();
                     return;
                 case 50: /*Refer No*/
+                    poTrans.setTranStat(Combo19.getSelectionModel().getSelectedIndex());
                     if(poTrans.BrowseRecord(txtField.getText(), true) == true){
                         loadRecord(); 
                         pnEditMode = poTrans.getEditMode();
@@ -525,6 +537,7 @@ public class POReturnController implements Initializable, IFXML {
                     }
                     return;
                 case 51: /*sSupplier*/
+                    poTrans.setTranStat(Combo19.getSelectionModel().getSelectedIndex());
                     if(poTrans.BrowseRecord(txtField.getText(), false) == true){
                         loadRecord(); 
                         pnEditMode = poTrans.getEditMode();

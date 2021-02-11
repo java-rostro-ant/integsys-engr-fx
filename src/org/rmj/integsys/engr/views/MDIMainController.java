@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.ResourceBundle;
+import java.util.Timer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.Animation;
@@ -38,16 +39,15 @@ import javafx.scene.layout.StackPane;
 import org.rmj.appdriver.GRider;
 import org.rmj.appdriver.MiscUtil;
 import org.rmj.appdriver.SQLUtil;
-import org.rmj.appdriver.agentfx.ShowMessageFX;
+import org.rmj.appdriver.agent.MsgBox;
 import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
-import org.rmj.appdriver.agentfx.service.ITokenize;
-import org.rmj.appdriver.agentfx.service.TokenApprovalFactory;
-import org.rmj.appdriver.agentfx.ui.showFXDialog;
 import org.rmj.appdriver.constants.UserRight;
 import org.rmj.cas.food.reports.classes.FoodReports;
 import org.rmj.cas.parameter.fx.ParameterFX;
 import org.rmj.integsys.engr.app.MainStage;
+import org.rmj.integsys.engr.base.EngrDashboard;
+import org.rmj.integsys.engr.base.iDashboardTrans;
 
 public class MDIMainController implements Initializable {
     @FXML
@@ -97,8 +97,6 @@ public class MDIMainController implements Initializable {
     @FXML
     private MenuItem mnu_InventoryTransfer;
     @FXML
-    private MenuItem menu_TransferPosting;
-    @FXML
     private FontAwesomeIconView file;
     @FXML
     private FontAwesomeIconView transaction;
@@ -130,6 +128,8 @@ public class MDIMainController implements Initializable {
     private StackPane stackBody;
     @FXML
     private MenuItem mnuDashboard;
+    @FXML
+    private MenuItem mnuProject;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {        
@@ -142,6 +142,16 @@ public class MDIMainController implements Initializable {
         getTime();
         lblCompany.setText(poGRider.getClientName());
         loadRecord();
+        
+        poTrans.setGRider(poGRider);
+        poTrans.setGRider(null);
+        
+        //set dashboard as main screen
+        setScene(loadAnimate("Dashboard.fxml"));
+        
+        //initialize loop for notification
+        Timer timer = new Timer();
+        timer.schedule(poTrans, 0, DEFAULT_TIMEOUT);
     }
     
     public void loadRecord(){
@@ -164,8 +174,8 @@ public class MDIMainController implements Initializable {
     }
 
     @FXML
-    private void mnuClose_Click(ActionEvent event) throws IOException {
-        if (ShowMessageFX.YesNo(null, pxeModuleName, "Are you sure you want to logout?")) System.exit(0);
+    private void mnuClose_Click(ActionEvent event) throws IOException {        
+        if (MsgBox.showYesNo("Are you sure you want to logout?") == MsgBox.RESP_YES_OK) System.exit(0);
     }
     
     @FXML
@@ -176,7 +186,7 @@ public class MDIMainController implements Initializable {
     @FXML
     private void mnuInvType_Click(ActionEvent event) throws IOException {
         if (poGRider.getUserLevel() != UserRight.ENGINEER){
-            ShowMessageFX.Information("Only MIS Department can add/modify INVENTORY TYPES.", "Notice", "Please inform MIS Department.");
+            MsgBox.showOk("Only MIS Department can add/modify INVENTORY TYPES. \n\nPlease inform MIS Department.");
             return;
         }
         
@@ -240,8 +250,8 @@ public class MDIMainController implements Initializable {
     
     @FXML
     private void btnExit_Clicke(ActionEvent event) {
-       if (ShowMessageFX.OkayCancel(null, "Confirm", "Do you want to exit?") == true)
-                CommonUtils.closeStage(btnExit);
+        if (MsgBox.showOk("Do you want to exit?") == MsgBox.RESP_YES_OK) 
+            System.exit(0);
     }
 
     @FXML
@@ -264,9 +274,6 @@ public class MDIMainController implements Initializable {
         setScene(loadAnimate("InvTransfer.fxml"));
     }
 
-    @FXML
-    private void menu_TransferPostingClick(ActionEvent event)throws IOException {
-    }
 
 
     @FXML
@@ -299,14 +306,6 @@ public class MDIMainController implements Initializable {
         setScene(loadAnimate("POReturn.fxml"));
     }
 
-
-
-    private void mnuResetPOS_Click(ActionEvent event) {
-        if (showFXDialog.resetPOS(poGRider)){
-            ShowMessageFX.Information(null, "Success", "POS was successfully reset.");
-        }
-    }
-
     @FXML
     private void mnuDiscounts_Click(ActionEvent event) {
         showParameter("PromoDiscount");
@@ -316,25 +315,17 @@ public class MDIMainController implements Initializable {
     @FXML
     private void mnuMain_KeyPressed(KeyEvent event) {
         if (event.getCode() == KeyCode.F12){
-            if (showFXDialog.resetPOS(poGRider)){
-                ShowMessageFX.Information(null, "Success", "POS was successfully reset.");
-            }
-        } else if (event.getCode() == KeyCode.F10){     
-            ITokenize instance = TokenApprovalFactory.make("CASys_DBF.PO_Master");
-            instance.setGRider(poGRider);
-            instance.setTransNmbr("M00120000001");
-            if (instance.createCodeRequest()){
-                System.out.println(instance.getMessage());
-            } else {
-                System.err.println(instance.getMessage());
-            }
-        } else if (event.getCode() == KeyCode.F11){
-            if (showFXDialog.getTokenApproval(poGRider, "CASys_DBF.PO_Master", "M00120000001")){
-                //TODO:
-                //  execute approving of transaction here
-                ShowMessageFX.Information(null, "Success", "Transaction was approved successfully..");
-            }
         }     
+    }
+
+    @FXML
+    private void mnuProject_Click(ActionEvent event) {
+        showParameter("Project");
+    }
+
+    @FXML
+    private void mnuDashboard_Click(ActionEvent event) {
+        setScene(loadAnimate("Dashboard.fxml"));
     }
        
     public static class MouseGestures {
@@ -371,11 +362,6 @@ public class MDIMainController implements Initializable {
                 node.setTranslateY(dragContext.y + event.getSceneY());
         };
     }
-    
-    public void setGRider(GRider foGRider){this.poGRider = foGRider;}
-    
-    private final String pxeModuleName = "MDIMainController";
-    private static GRider poGRider;
     
     private void getTime(){
         Timeline clock = new Timeline(new KeyFrame(Duration.ZERO, e -> {            
@@ -478,12 +464,23 @@ public class MDIMainController implements Initializable {
     }
     
     private AnchorPane loadAnimate(String fsFormName){
-        IFXML fxObj = getController(fsFormName);
-        
         FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(fxObj.getClass().getResource(fsFormName));
-        fxmlLoader.setController(fxObj);      
-   
+        
+        switch (fsFormName){
+            case "Dashboard.fxml":
+                iDashboardTrans instance = getDashboard(fsFormName);
+        
+                fxmlLoader.setLocation(instance.getClass().getResource(fsFormName));
+                fxmlLoader.setController(instance);     
+                break;
+            default:
+                IFXML fxObj = getController(fsFormName);
+        
+                fxmlLoader.setLocation(fxObj.getClass().getResource(fsFormName));
+                fxmlLoader.setController(fxObj);   
+                break;
+        }
+        
         AnchorPane root;
         try {
             root = (AnchorPane) fxmlLoader.load();
@@ -499,7 +496,23 @@ public class MDIMainController implements Initializable {
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
+        
         return null;
+    }
+    
+    private iDashboardTrans getDashboard(String fsValue){                
+        iDashboardTrans instance;
+        
+        switch (fsValue.replace(".fxml", "")){
+            //start of main forms
+            case "Dashboard":
+                instance = new DashboardController();
+                instance.setGRider(poGRider);
+                instance.setClass(poTrans);
+                return instance;
+            default: 
+                return null;
+        }
     }
     
     private IFXML getController(String fsValue){                
@@ -588,8 +601,20 @@ public class MDIMainController implements Initializable {
                 instance = new org.rmj.cas.parameter.fx.InventoryLocationController();
                 instance.setGRider(poGRider);
                 return instance; 
+            case "Project":
+                instance = new org.rmj.cas.parameter.fx.ProjectController();
+                instance.setGRider(poGRider);
+                return instance; 
             default: 
                 return null;
         }
     }
+    
+    public void setGRider(GRider foGRider){this.poGRider = foGRider;}
+    
+    private final String pxeModuleName = "MDIMainController";
+    private static GRider poGRider;
+    
+    EngrDashboard poTrans = new EngrDashboard();
+    final long DEFAULT_TIMEOUT = 60000;
 }
