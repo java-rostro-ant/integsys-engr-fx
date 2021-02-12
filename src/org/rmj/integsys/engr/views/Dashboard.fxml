@@ -36,7 +36,7 @@
                            <top>
                               <AnchorPane minHeight="-Infinity" prefHeight="200.0" prefWidth="700.0" style="-fx-background-color: #B3B6B7;" BorderPane.alignment="CENTER">
                                  <children>
-                                    <PieChart fx:id="pie01" layoutX="-74.0" layoutY="-100.0" prefHeight="190.0" prefWidth="190.0" title="Inventory Types" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                                    <PieChart fx:id="pie01" labelsVisible="false" layoutX="-74.0" layoutY="-100.0" prefHeight="190.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                  </children></AnchorPane>
                            </top>
                            <center>

@@ -143,7 +143,6 @@ public class MDIMainController implements Initializable {
         lblCompany.setText(poGRider.getClientName());
         loadRecord();
         
-        poTrans.setGRider(poGRider);
         poTrans.setGRider(null);
         
         //set dashboard as main screen
@@ -250,7 +249,7 @@ public class MDIMainController implements Initializable {
     
     @FXML
     private void btnExit_Clicke(ActionEvent event) {
-        if (MsgBox.showOk("Do you want to exit?") == MsgBox.RESP_YES_OK) 
+        if (MsgBox.showYesNo("Do you want to exit?") == MsgBox.RESP_YES_OK) 
             System.exit(0);
     }
 

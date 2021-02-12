@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
@@ -17,6 +18,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import org.rmj.appdriver.GRider;
 import org.rmj.appdriver.SQLUtil;
+import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.integsys.engr.base.iCallBack;
 import org.rmj.integsys.engr.base.iDashboard;
 import org.rmj.integsys.engr.base.iDashboardTrans;
@@ -119,15 +121,7 @@ public class DashboardController implements Initializable, iDashboardTrans {
         loadReceiving();
         loadReturns();
         loadOpenTransfer();
-        loadUnpostedTransfer();
-        
-        ObservableList<PieChart.Data> pieChartData =
-                FXCollections.observableArrayList(
-                new PieChart.Data("MRO", 50),
-                new PieChart.Data("RwMt", 25),
-                new PieChart.Data("FsGd", 25));
-        pie01.setData(pieChartData);
-        pie01.setTitle("Imported Fruits");
+        loadUnpostedTransfer();        
     }    
 
     @Override
@@ -143,6 +137,8 @@ public class DashboardController implements Initializable, iDashboardTrans {
     @FXML
     private void tblDetail_Click(MouseEvent event) {
         int lnRow  = tblDetail.getSelectionModel().getSelectedIndex();   
+        
+        loadPieData(data.get(lnRow).getIndex02());
     }
          
     private void loadProjects(){
@@ -158,7 +154,7 @@ public class DashboardController implements Initializable, iDashboardTrans {
                 data.add(new TableModel(String.valueOf(lnCtr),
                         loRS.getString("sProjCode"),
                         loRS.getString("sProjDesc"),
-                        "0.00",
+                        CommonUtils.NumberFormat(loRS.getDouble("xValuexxx"), "#,##0.00"),
                         "",
                         "",
                         "",
@@ -314,6 +310,22 @@ public class DashboardController implements Initializable, iDashboardTrans {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+    }
+    
+    public void loadPieData(String fsValue){
+        ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();;
+        ResultSet loRS = poTrans.getProjectPieData(fsValue);
+        
+        try {
+            while (loRS.next()){
+                pieData.add(new PieChart.Data(loRS.getString("sInvTypCd"), loRS.getDouble("xValuexxx")));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        pie01.setData(pieData);
+        pie01.setLegendSide(Side.LEFT);
     }
     
     public void initGrid() {

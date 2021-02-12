@@ -842,7 +842,19 @@ public class POReceivingController implements Initializable, IFXML {
                 case 5: /*Replaced ID*/
                     break;
                 case 4: /*Barcode*/
+                    if (poTrans.getDetail(pnRow, "sStockIDx").equals("")){
+                        poTrans.setDetail(pnRow, 100, txtDetail04.getText());
+                    }
+                    break;
                 case 80: /*Description*/
+                    //send the barcode and descript to class if it has no stock id
+                    if (poTrans.getDetail(pnRow, "sStockIDx").equals("")){                        
+                        if (txtDetail80.getText().equals("")){
+                            MsgBox.showOk("Description must have a value if stock is not existing.");
+                            return;
+                        }
+                        poTrans.setDetail(pnRow, 101, txtDetail80.getText());
+                    }
                     break;
                 case 7: /*Quantity*/
                     int lnValue = 0;

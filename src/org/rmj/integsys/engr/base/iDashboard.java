@@ -12,4 +12,5 @@ public interface iDashboard{
     public ResultSet getReturnsxx();
     public ResultSet getOpenTransfer();
     public ResultSet getUnpostedTransfer();
+    public ResultSet getProjectPieData(String fsProjCode);
 }
