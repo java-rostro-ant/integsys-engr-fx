@@ -1,4 +1,4 @@
-package org.rmj.integsys.engr.app;
+package org.rmj.integsys.engr.views;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -16,7 +16,7 @@ import org.rmj.integsys.engr.views.MDIMainController;
 
 public class MainStage extends Application {
     public final static String pxeMainFormTitle = "Engineering Inventory Management System v1.0";
-    public final static String pxeMainForm = "../views/MDIMain.fxml";
+    public final static String pxeMainForm = "MDIMain.fxml";
     public final static String pxeStageIcon = "org/rmj/integsys/engr/images/icon.png";
     public static GRider poGRider;
     
