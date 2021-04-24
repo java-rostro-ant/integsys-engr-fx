@@ -34,13 +34,13 @@ import org.rmj.appdriver.agent.MsgBox;
 import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
 import org.rmj.engr.inventory.base.Inventory;
-import org.rmj.cas.parameter.agent.XMInventoryType;
-import org.rmj.cas.parameter.agent.XMTerm;
+import org.rmj.engr.parameter.agent.XMInventoryType;
+import org.rmj.engr.parameter.agent.XMTerm;
 import org.rmj.appdriver.agentfx.callback.IMasterDetail;
 import org.rmj.appdriver.agentfx.ui.showFXDialog;
 import org.rmj.appdriver.constants.TransactionStatus;
 import org.rmj.appdriver.constants.UserRight;
-import org.rmj.cas.parameter.agent.XMProject;
+import org.rmj.engr.parameter.agent.XMProject;
 import org.rmj.engr.purchasing.agent.XMPurchaseOrder;
 
 
@@ -305,7 +305,10 @@ public class PurchaseOrderController implements Initializable, IFXML {
                 break;
             case "btnConfirm":
                 if (!psOldRec.equals("")){  
-                     if(!poTrans.getMaster("cTranStat").equals(TransactionStatus.STATE_OPEN)){
+                    if (MsgBox.showYesNo("Do you want to confirm this transaction?") != MsgBox.RESP_YES_OK)
+                        return;
+                    
+                    if(!poTrans.getMaster("cTranStat").equals(TransactionStatus.STATE_OPEN)){
                         MsgBox.showOk("Can't update processed transactions! \n\n" + 
                                         "Trasaction may be CLOSED/POSTED/CANCELLED.");
                         return;
@@ -391,30 +394,33 @@ public class PurchaseOrderController implements Initializable, IFXML {
                 break;
             case "btnSearch": return;
             case "btnSave": 
-                if (poTrans.saveRecord()){
-                    MsgBox.showOk("Transaction saved successfuly.");
-                    
-                    //re open and print the record
-                    if (poTrans.openRecord((String) poTrans.getMaster("sTransNox"))){
-                        loadRecord(); 
-                        psOldRec = (String) poTrans.getMaster("sTransNox");
+                if (MsgBox.showYesNo("Do you want to cancel this transaction?") == MsgBox.RESP_YES_OK){
+                    if (poTrans.saveRecord()){
+                        MsgBox.showOk("Transaction saved successfuly.");
 
-                        pnEditMode = poTrans.getEditMode();
+                        //re open and print the record
+                        if (poTrans.openRecord((String) poTrans.getMaster("sTransNox"))){
+                            loadRecord(); 
+                            psOldRec = (String) poTrans.getMaster("sTransNox");
+
+                            pnEditMode = poTrans.getEditMode();
+                        } else {
+                            clearFields();
+                            initGrid();
+                            pnEditMode = EditMode.UNKNOWN;
+                        }
+
+                        initButton(pnEditMode);
+                        break;
                     } else {
-                        clearFields();
-                        initGrid();
-                        pnEditMode = EditMode.UNKNOWN;
+                        MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
                     }
-                    
-                    initButton(pnEditMode);
-                } else {
-                    MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
-                    return;
                 }
-                
-                break;
+                return;
             case "btnDel":  
-                deleteDetail();
+                if(MsgBox.showYesNo("Do you want to remove this item?") == MsgBox.RESP_YES_OK)
+                    deleteDetail();
+                
                 return;
             case "btnBrowse":       
                 poTrans.setTranStat(Combo17.getSelectionModel().getSelectedIndex());

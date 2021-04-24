@@ -94,7 +94,7 @@ public class EngrDashboard extends TimerTask implements iDashboard{
                         " FROM PO_Return_Master a" +
                             " LEFT JOIN Project b" +
                                 " ON a.sBranchCd = b.sProjCode" +
-                        " WHERE cTranStat = 1" +
+                        " WHERE cTranStat < 1" +
                         " ORDER BY a.dTransact, a.sTransNox";
         
         return poGRider.executeQuery(lsSQL);

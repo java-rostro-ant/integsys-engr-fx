@@ -55,7 +55,7 @@ import org.rmj.appdriver.agent.MsgBox;
 import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
 import org.rmj.appdriver.agentfx.callback.IMasterDetail;
-import org.rmj.cas.parameter.agent.XMProject;
+import org.rmj.engr.parameter.agent.XMProject;
 import org.rmj.engr.inventory.base.InvTransfer;
 
 public class InvTransferController implements Initializable, IFXML {
@@ -187,7 +187,7 @@ public class InvTransferController implements Initializable, IFXML {
         btnBrowse.setVisible(!lbShow);
         btnNew.setVisible(!lbShow);
         btnPrint.setVisible(!lbShow);
-        btnConfirm.setVisible(!lbShow);
+        btnConfirm.setVisible(false);
         btnVoid.setVisible(!lbShow);
         
         txtField01.setDisable(!lbShow);
@@ -420,16 +420,24 @@ public class InvTransferController implements Initializable, IFXML {
                 break;
             case "btnPrint": 
                 if (!psOldRec.equals("")){
-                    if (!printTransfer()) return;
+                    if (MsgBox.showYesNo("Do you want to print the transaction?") == MsgBox.RESP_YES_OK){
+                        if (!printTransfer()) return;
                     
-                    if(poTrans.getMaster("cTranStat").equals(TransactionStatus.STATE_OPEN)){
-                        if (poTrans.closeTransaction(psOldRec)){
-                            clearFields();
-                            initGrid();
-                            pnEditMode = EditMode.UNKNOWN;
-                            initButton(pnEditMode);
-                        } else 
-                            MsgBox.showOk(poTrans.getErrMsg() + "  " + poTrans.getMessage());
+                        if(poTrans.getMaster("cTranStat").equals(TransactionStatus.STATE_OPEN)){
+                            //close the transaction
+                            if (poTrans.closeTransaction(psOldRec)){
+                                //post the transaction
+                                if (poTrans.postTransaction(psOldRec)){
+                                    MsgBox.showOk("Transaction was posted successfully.");
+                                    clearFields();
+                                    initGrid();
+                                    pnEditMode = EditMode.UNKNOWN;
+                                    initButton(pnEditMode);
+                                } else 
+                                    MsgBox.showOk(poTrans.getErrMsg() + "  " + poTrans.getMessage());
+                            } else 
+                                MsgBox.showOk(poTrans.getErrMsg() + "  " + poTrans.getMessage());
+                        }
                     }
                 } else 
                     MsgBox.showOk("Please select a record to print!");
@@ -473,30 +481,31 @@ public class InvTransferController implements Initializable, IFXML {
                     return;
             case "btnSearch":return;
             case "btnSave": 
-                if (poTrans.saveTransaction()){
-                    MsgBox.showOk("Transaction saved successfuly.");
-                    //re open and print the record
-                    if (poTrans.openTransaction((String) poTrans.getMaster("sTransNox"))){
-                        loadRecord(); 
-                        psOldRec = (String) poTrans.getMaster("sTransNox");
-                                                
-                        pnEditMode = poTrans.getEditMode();
-                    } else {
-                        clearFields();
-                        initGrid();
-                        pnEditMode = EditMode.UNKNOWN;
-                    }
-                    
-                    initButton(pnEditMode);
-                    break;
-                } else{
-                    if (!poTrans.getErrMsg().equals(""))
-                        MsgBox.showOk(poTrans.getErrMsg() + "\n\nPlease inform MIS department.");
-                    else
-                        MsgBox.showOk(poTrans.getMessage() + "\n\nPlease verify your entry.");
-                    
-                    return;
-                } 
+                if(MsgBox.showYesNo("Do you want to save transaction?") == MsgBox.RESP_YES_OK){
+                    if (poTrans.saveTransaction()){
+                        MsgBox.showOk("Transaction saved successfuly.");
+                        //re open and print the record
+                        if (poTrans.openTransaction((String) poTrans.getMaster("sTransNox"))){
+                            loadRecord(); 
+                            psOldRec = (String) poTrans.getMaster("sTransNox");
+
+                            pnEditMode = poTrans.getEditMode();
+                        } else {
+                            clearFields();
+                            initGrid();
+                            pnEditMode = EditMode.UNKNOWN;
+                        }
+
+                        initButton(pnEditMode);
+                        break;
+                    } else{
+                        if (!poTrans.getErrMsg().equals(""))
+                            MsgBox.showOk(poTrans.getErrMsg() + "\n\nPlease inform MIS department.");
+                        else
+                            MsgBox.showOk(poTrans.getMessage() + "\n\nPlease verify your entry.");
+                    } 
+                }                
+                return;
             case "btnBrowse":
                 switch(pnIndex){
                     case 50: /*sTransNox*/
@@ -528,8 +537,11 @@ public class InvTransferController implements Initializable, IFXML {
                     break;
                 }
                 
-                poTrans.deleteDetail(lnIndex);
-                loadDetail();
+                if(MsgBox.showYesNo("Do you want to remove this item?") == MsgBox.RESP_YES_OK){
+                    poTrans.deleteDetail(lnIndex);
+                    loadDetail();
+                }
+                
                 break;
             default:
                 MsgBox.showOk("Button with name " + lsButton + " not registered.");
@@ -554,7 +566,7 @@ public class InvTransferController implements Initializable, IFXML {
             txtField51.setText((String) loProject.getMaster("sProjDesc"));
         }
                 
-        txtField03.setText(SQLUtil.dateFormat((Date) poTrans.getMaster("dTransact"), SQLUtil.FORMAT_MEDIUM_DATE));
+        txtField03.setText(SQLUtil.dateFormat((Date) poTrans.getMaster("dTransact"), "yyyy-MM-dd"));
         txtField05.setText((String) poTrans.getMaster("sRemarksx"));
         
         Label12.setText(CommonUtils.NumberFormat(Double.valueOf(poTrans.getMaster("nTranTotl").toString()), "#,##0.00"));
@@ -887,7 +899,7 @@ public class InvTransferController implements Initializable, IFXML {
             params.put("sDestinat", "");
         
         params.put("sTransNox", poTrans.getMaster("sTransNox").toString().substring(1));
-        params.put("sReportDt", SQLUtil.dateFormat((Date) poTrans.getMaster("dTransact"), SQLUtil.FORMAT_MEDIUM_DATE));
+        params.put("sReportDt", SQLUtil.dateFormat((Date) poTrans.getMaster("dTransact"), "yyyy-MM-dd"));
         params.put("sPrintdBy", poGRider.getUserID());
                 
         try {
@@ -942,7 +954,7 @@ public class InvTransferController implements Initializable, IFXML {
                 if (loProject != null) txtField02.setText((String) loProject.getMaster("sProjDesc"));
                 break;
             case 3:
-                txtField03.setText(SQLUtil.dateFormat((Date) poTrans.getMaster("dTransact"), SQLUtil.FORMAT_MEDIUM_DATE));
+                txtField03.setText(SQLUtil.dateFormat((Date) poTrans.getMaster("dTransact"), "yyyy-MM-dd"));
                 break;
             case 4:
                 XMProject loDestinat = poTrans.GetProject((String)poTrans.getMaster("sDestinat"), true);

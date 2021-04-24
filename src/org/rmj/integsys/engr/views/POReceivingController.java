@@ -37,10 +37,10 @@ import org.rmj.appdriver.agent.MsgBox;
 import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
 import org.rmj.engr.inventory.base.Inventory;
-import org.rmj.cas.parameter.agent.XMInventoryType;
-import org.rmj.cas.parameter.agent.XMTerm;
+import org.rmj.engr.parameter.agent.XMInventoryType;
+import org.rmj.engr.parameter.agent.XMTerm;
 import org.rmj.appdriver.agentfx.callback.IMasterDetail;
-import org.rmj.cas.parameter.agent.XMProject;
+import org.rmj.engr.parameter.agent.XMProject;
 import org.rmj.engr.purchasing.agent.XMPOReceiving;
 
 public class POReceivingController implements Initializable, IFXML {
@@ -371,38 +371,44 @@ public class POReceivingController implements Initializable, IFXML {
                 break;
             case "btnPrint":
                 if(!psOldRec.equals("")){
-                    if (poTrans.printRecord()){
-                        clearFields();
-                        initGrid();
-                        pnEditMode = EditMode.UNKNOWN;
-                    } else
-                        MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
+                    if (MsgBox.showYesNo("Do you want to print the transaction?") == MsgBox.RESP_YES_OK){
+                        if (poTrans.printRecord()){
+                            clearFields();
+                            initGrid();
+                            pnEditMode = EditMode.UNKNOWN;
+                        } else
+                            MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
+                    }
                 }else 
                     MsgBox.showOk("Please select a record to print!");                            
                 
                 break;
             case "btnVoid":
-                if (!psOldRec.equals("")){                    
-                    if (poTrans.cancelRecord(psOldRec)){
-                        MsgBox.showOk("Transaction CANCELLED successfully.");                            
-                        initGrid();
-                        clearFields();
-                        pnEditMode = EditMode.UNKNOWN;
-                    } else 
-                        MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
+                if (!psOldRec.equals("")){            
+                    if (MsgBox.showYesNo("Do you want to cancel transaction?") == MsgBox.RESP_YES_OK){
+                        if (poTrans.cancelRecord(psOldRec)){
+                            MsgBox.showOk("Transaction CANCELLED successfully.");                            
+                            initGrid();
+                            clearFields();
+                            pnEditMode = EditMode.UNKNOWN;
+                        } else 
+                            MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
+                    }
                 } else MsgBox.showOk("Please select a record to cancel!"); 
                                        
                 break;
             case "btnConfirm": 
-                if (!psOldRec.equals("")){                    
-                    if (poTrans.postRecord(psOldRec)){
-                        MsgBox.showOk("Transaction CONFIRMED successfully.");
-                        clearFields();
-                        initGrid();
-                        pnEditMode = EditMode.UNKNOWN;
-                        initButton(pnEditMode);
-                    } else
-                        MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
+                if (!psOldRec.equals("")){       
+                    if (MsgBox.showYesNo("Do you want to confirm transaction?") == MsgBox.RESP_YES_OK){
+                        if (poTrans.postRecord(psOldRec)){
+                            MsgBox.showOk("Transaction CONFIRMED successfully.");
+                            clearFields();
+                            initGrid();
+                            pnEditMode = EditMode.UNKNOWN;
+                            initButton(pnEditMode);
+                        } else
+                            MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
+                    }
                 } else MsgBox.showOk("Please select a record to confirm!");
                                     
                 break;                
@@ -415,27 +421,29 @@ public class POReceivingController implements Initializable, IFXML {
                     return;
             case "btnSearch": return;
             case "btnSave": 
-                if (poTrans.saveRecord()){
-                    MsgBox.showOk("Transaction saved successfuly.");                    
-                    
-                    //re open and print the record
-                    if (poTrans.openRecord((String) poTrans.getMaster("sTransNox"))){
-                        loadRecord(); 
-                        psOldRec = (String) poTrans.getMaster("sTransNox");
-                        
-                        pnEditMode = poTrans.getEditMode();
+                if(MsgBox.showYesNo("Do you want to save transaction?") == MsgBox.RESP_YES_OK){
+                    if (poTrans.saveRecord()){
+                        MsgBox.showOk("Transaction saved successfuly.");                    
+
+                        //re open and print the record
+                        if (poTrans.openRecord((String) poTrans.getMaster("sTransNox"))){
+                            loadRecord(); 
+                            psOldRec = (String) poTrans.getMaster("sTransNox");
+
+                            pnEditMode = poTrans.getEditMode();
+                        } else {
+                            clearFields();
+                            initGrid();
+                            pnEditMode = EditMode.UNKNOWN;
+                        }
+
+                        initButton(pnEditMode);
+                        break;
                     } else {
-                        clearFields();
-                        initGrid();
-                        pnEditMode = EditMode.UNKNOWN;
-                    }
-                    
-                    initButton(pnEditMode);
-                    break;
-                } else {
-                    MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
-                    return;      
-                }   
+                        MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());      
+                    }   
+                }                
+                return;
             case "btnBrowse":
                 poTrans.setTranStat(Combo21.getSelectionModel().getSelectedIndex());
                 if(poTrans.BrowseRecord(txtField50.getText(), true)==true){

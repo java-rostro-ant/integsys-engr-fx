@@ -34,11 +34,11 @@ import org.rmj.appdriver.agent.MsgBox;
 import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
 import org.rmj.engr.inventory.base.Inventory;
-import org.rmj.cas.parameter.agent.XMInventoryType;
+import org.rmj.engr.parameter.agent.XMInventoryType;
 import org.rmj.engr.purchasing.agent.XMPOReceiving;
 import org.rmj.engr.purchasing.agent.XMPOReturn;
 import org.rmj.appdriver.agentfx.callback.IMasterDetail;
-import org.rmj.cas.parameter.agent.XMProject;
+import org.rmj.engr.parameter.agent.XMProject;
 
 public class POReturnController implements Initializable, IFXML {
     @FXML
@@ -364,27 +364,31 @@ public class POReturnController implements Initializable, IFXML {
                 break;
             case "btnConfirm":
                 if (!psOldRec.equals("")){                    
-                    if (poTrans.postRecord(psOldRec)){
-                        MsgBox.showOk("Transaction CONFIRMED successfully.");
-                        
-                        if (poTrans.openRecord(psOldRec)) {
-                            loadRecord();
-                            pnEditMode = poTrans.getEditMode();
-                        } else 
-                        MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
-                    }
+                    if (MsgBox.showYesNo("Do you want to post this transaction?") == MsgBox.RESP_YES_OK){
+                        if (poTrans.postRecord(psOldRec)){
+                            MsgBox.showOk("Transaction CONFIRMED successfully.");
+
+                            if (poTrans.openRecord(psOldRec)) {
+                                loadRecord();
+                                pnEditMode = poTrans.getEditMode();
+                            } else 
+                            MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
+                        }
+                    }                   
                 } else
                     MsgBox.showOk("Please select a record to confirm!");
                 return;
             case "btnVoid":
                 if (!psOldRec.equals("")){
-                    if (poTrans.cancelRecord(psOldRec)){
-                        MsgBox.showOk("Transaction CANCELLED successfully.");
-                        clearFields();
-                        initGrid();
-                        pnEditMode = EditMode.UNKNOWN;
-                    } else 
-                        MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
+                    if (MsgBox.showYesNo("Do you want to cancel this transaction?") == MsgBox.RESP_YES_OK){
+                        if (poTrans.cancelRecord(psOldRec)){
+                            MsgBox.showOk("Transaction CANCELLED successfully.");
+                            clearFields();
+                            initGrid();
+                            pnEditMode = EditMode.UNKNOWN;
+                        } else 
+                            MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
+                    }
                 } else 
                     MsgBox.showOk("Please select a record to cancel!");
                 break;
@@ -394,29 +398,34 @@ public class POReturnController implements Initializable, IFXML {
                 break;
             case "btnSearch": getMaster(pnIndex); return;
             case "btnSave": 
-                if (poTrans.saveRecord()){
-                    MsgBox.showOk("Transaction saved successfuly.");                    
-                    
-                    //re open and print the record
-                    if (poTrans.openRecord((String) poTrans.getMaster("sTransNox"))){
-                        loadRecord(); 
-                        psOldRec = (String) poTrans.getMaster("sTransNox");
-                                                
-                        pnEditMode = poTrans.getEditMode();
+                if (MsgBox.showYesNo("Do you want to save this transaction?") == MsgBox.RESP_YES_OK){
+                    if (poTrans.saveRecord()){
+                        MsgBox.showOk("Transaction saved successfuly.");                    
+
+                        //re open and print the record
+                        if (poTrans.openRecord((String) poTrans.getMaster("sTransNox"))){
+                            loadRecord(); 
+                            psOldRec = (String) poTrans.getMaster("sTransNox");
+
+                            pnEditMode = poTrans.getEditMode();
+                        } else {
+                            clearFields();
+                            initGrid();
+                            pnEditMode = EditMode.UNKNOWN;
+                        }
+
+                        initButton(pnEditMode);
+                        break;
                     } else {
-                        clearFields();
-                        initGrid();
-                        pnEditMode = EditMode.UNKNOWN;
-                    }
-                    
-                    initButton(pnEditMode);
-                    break;
-                } else {
-                    MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
-                    return;      
-                }   
+                        MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
+                    }   
+                }
+                
+                return;    
             case "btnDel":  
-                deleteDetail();
+                if(MsgBox.showYesNo("Do you want to remove this item?") == MsgBox.RESP_YES_OK)
+                    deleteDetail();
+                
                 return;
             default:
                 MsgBox.showOk("Button with name " + lsButton + " not registered.");
@@ -609,8 +618,6 @@ public class POReturnController implements Initializable, IFXML {
             case ENTER:
                 CommonUtils.SetNextFocus(txtDetail);
         }
-        
-        
     }
     
     private void deleteDetail(){
@@ -871,7 +878,7 @@ public class POReturnController implements Initializable, IFXML {
                 case 3:
                     break;
                 case 5:
-                    txtField05.setText(String.valueOf(poTrans.getDetail(pnRow, fnIndex)));
+                    txtDetail05.setText(String.valueOf(poTrans.getDetail(pnRow, fnIndex)));
                     loadDetail();
                     
                     if (!poTrans.getDetail(poTrans.getDetailCount() - 1, "sStockIDx").toString().isEmpty() && 

@@ -43,8 +43,8 @@ import org.rmj.appdriver.agent.MsgBox;
 import org.rmj.appdriver.agentfx.CommonUtils;
 import org.rmj.appdriver.agentfx.callback.IFXML;
 import org.rmj.appdriver.constants.UserRight;
-import org.rmj.cas.food.reports.classes.FoodReports;
-import org.rmj.cas.parameter.fx.ParameterFX;
+import org.rmj.engr.reports.classes.FoodReports;
+import org.rmj.engr.parameter.fx.ParameterFX;
 import org.rmj.integsys.engr.base.EngrDashboard;
 import org.rmj.integsys.engr.base.iDashboardTrans;
 
@@ -544,63 +544,63 @@ public class MDIMainController implements Initializable {
                 return instance;
             //start of parameter forms
             case "Brand":
-                instance = new org.rmj.cas.parameter.fx.BrandController();
+                instance = new org.rmj.engr.parameter.fx.BrandController();
                 instance.setGRider(poGRider);
                 return instance;                
             case "InventoryType":
-                instance = new org.rmj.cas.parameter.fx.InventoryTypeController();
+                instance = new org.rmj.engr.parameter.fx.InventoryTypeController();
                 instance.setGRider(poGRider);
                 return instance;      
             case "Category":
-                instance = new org.rmj.cas.parameter.fx.CategoryController();
+                instance = new org.rmj.engr.parameter.fx.CategoryController();
                 instance.setGRider(poGRider);
                 return instance;          
             case "Category2":
-                instance = new org.rmj.cas.parameter.fx.Category2Controller();
+                instance = new org.rmj.engr.parameter.fx.Category2Controller();
                 instance.setGRider(poGRider);
                 return instance;          
             case "Category3":
-                instance = new org.rmj.cas.parameter.fx.Category3Controller();
+                instance = new org.rmj.engr.parameter.fx.Category3Controller();
                 instance.setGRider(poGRider);
                 return instance;    
             case "Category4":
-                instance = new org.rmj.cas.parameter.fx.Category4Controller();
+                instance = new org.rmj.engr.parameter.fx.Category4Controller();
                 instance.setGRider(poGRider);
                 return instance;    
             case "PromoDiscount":
-                instance = new org.rmj.cas.parameter.fx.PromoDiscountController();
+                instance = new org.rmj.engr.parameter.fx.PromoDiscountController();
                 instance.setGRider(poGRider);
                 return instance;    
             case "Model":
-                instance = new org.rmj.cas.parameter.fx.ModelController();
+                instance = new org.rmj.engr.parameter.fx.ModelController();
                 instance.setGRider(poGRider);
                 return instance;   
             case "Color":
-                instance = new org.rmj.cas.parameter.fx.ColorController();
+                instance = new org.rmj.engr.parameter.fx.ColorController();
                 instance.setGRider(poGRider);
                 return instance;  
             case "Company":
-                instance = new org.rmj.cas.parameter.fx.CompanyController();
+                instance = new org.rmj.engr.parameter.fx.CompanyController();
                 instance.setGRider(poGRider);
                 return instance;  
             case "Measure":
-                instance = new org.rmj.cas.parameter.fx.MeasureController();
+                instance = new org.rmj.engr.parameter.fx.MeasureController();
                 instance.setGRider(poGRider);
                 return instance;      
             case "Supplier":
-                instance = new org.rmj.cas.parameter.fx.SupplierController();
+                instance = new org.rmj.engr.parameter.fx.SupplierController();
                 instance.setGRider(poGRider);
                 return instance;      
             case "Term":
-                instance = new org.rmj.cas.parameter.fx.TermController();
+                instance = new org.rmj.engr.parameter.fx.TermController();
                 instance.setGRider(poGRider);
                 return instance;      
             case "InventoryLocation":
-                instance = new org.rmj.cas.parameter.fx.InventoryLocationController();
+                instance = new org.rmj.engr.parameter.fx.InventoryLocationController();
                 instance.setGRider(poGRider);
                 return instance; 
             case "Project":
-                instance = new org.rmj.cas.parameter.fx.ProjectController();
+                instance = new org.rmj.engr.parameter.fx.ProjectController();
                 instance.setGRider(poGRider);
                 return instance; 
             default: 
