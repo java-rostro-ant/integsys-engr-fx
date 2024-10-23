@@ -317,15 +317,18 @@ public class PurchaseOrderController implements Initializable, IFXML {
                     if (CommonUtils.getConfiguration(poGRider, "TokenAprvl").equals("1")){
                         if (!"0".equals((String) poTrans.getMaster("cTranStat"))) return;
                         
+                        //export PO to PDF
+                        //poTrans.printRecord(true);
+                        
                         //token type approval
                         if (showFXDialog.getTokenApproval(poGRider, "CASys_DBF.PO_Master", psOldRec)){
-                            if (poTrans.closeRecord(psOldRec, poGRider.getUserID(), "TOKENAPPROVL")){
+                            if (poTrans.closeRecord(psOldRec, poGRider.getUserID(), "TOKENAPPROVL")){        
                                 MsgBox.showOk("Transaction was approved successfully.");
                                 if (poTrans.openRecord(psOldRec)){                                
                                     loadRecord(); 
                                     psOldRec = (String) poTrans.getMaster("sTransNox");
 
-                                    poTrans.printRecord();
+                                    poTrans.printRecord(false);
 
                                     pnEditMode = poTrans.getEditMode();
                                 } else {
@@ -336,6 +339,9 @@ public class PurchaseOrderController implements Initializable, IFXML {
                             } else
                                 MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
                         }
+                        
+                        //re-export PO to PDF with additional approval
+                        //poTrans.printRecord(true);
                     } else{
                         //user approval type
                         if (poGRider.getUserLevel() < UserRight.MANAGER){
@@ -354,7 +360,7 @@ public class PurchaseOrderController implements Initializable, IFXML {
                                         loadRecord(); 
                                         psOldRec = (String) poTrans.getMaster("sTransNox");
 
-                                        poTrans.printRecord();
+                                        poTrans.printRecord(false);
 
                                         pnEditMode = poTrans.getEditMode();
                                     } else {
@@ -373,7 +379,7 @@ public class PurchaseOrderController implements Initializable, IFXML {
                                     loadRecord(); 
                                     psOldRec = (String) poTrans.getMaster("sTransNox");
 
-                                    poTrans.printRecord();
+                                    poTrans.printRecord(false);
 
                                     pnEditMode = poTrans.getEditMode();
                                 } else {
@@ -434,8 +440,10 @@ public class PurchaseOrderController implements Initializable, IFXML {
                 return;
             case "btnPrint":
                 if (!psOldRec.equals("")){
-                    if ("1".equals(poTrans.getMaster("cTranStat")))
-                        poTrans.printRecord();
+                    //poTrans.printRecord(true);
+                    if ("1".equals(poTrans.getMaster("cTranStat")) || 
+                        "2".equals(poTrans.getMaster("cTranStat")))
+                        poTrans.printRecord(false);
                     else 
                         MsgBox.showOk("Approval is needed to print this transaction.");
                 }

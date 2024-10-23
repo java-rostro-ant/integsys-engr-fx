@@ -58,8 +58,20 @@ public class Login {
     
     private static boolean loadProperties(){
         try {
+            //Set important path configuration for this utility
+            String path;
+            if(System.getProperty("os.name").toLowerCase().contains("win")){
+                path = "D:/GGC_Java_Systems";
+            }
+            else{
+                path = "/srv/GGC_Java_Systems";
+            }
+
+            System.setProperty("sys.default.path.temp", path + "/temp");
+            System.setProperty("sys.default.path.config", path);
+            
             Properties po_props = new Properties();
-            po_props.load(new FileInputStream("D:\\GGC_Java_Systems\\config\\rmj.properties"));
+            po_props.load(new FileInputStream(System.getProperty("sys.default.path.config") + "/config/rmj.properties"));
             
             System.setProperty("app.debug.mode", po_props.getProperty("app.debug.mode"));
             System.setProperty("user.id", po_props.getProperty("user.id"));
