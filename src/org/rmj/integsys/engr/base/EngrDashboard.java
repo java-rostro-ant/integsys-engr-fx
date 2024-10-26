@@ -64,6 +64,7 @@ public class EngrDashboard extends TimerTask implements iDashboard{
                             " LEFT JOIN Project b" +
                                 " ON a.sBranchCd = b.sProjCode" +
                         " WHERE cTranStat < 1" +
+                            " AND LEFT(a.sTransNox, 4) LIKE " + SQLUtil.toSQL(poGRider.getBranchCode()+ "%") +
                         " ORDER BY a.dTransact, a.sTransNox";
         
         return poGRider.executeQuery(lsSQL);
@@ -80,6 +81,7 @@ public class EngrDashboard extends TimerTask implements iDashboard{
                             " LEFT JOIN Project b" +
                                 " ON a.sBranchCd = b.sProjCode" +
                         " WHERE cTranStat < 1" +
+                            " AND LEFT(a.sTransNox, 4) LIKE " + SQLUtil.toSQL(poGRider.getBranchCode()+ "%") +
                         " ORDER BY a.dTransact, a.sTransNox";
         
         return poGRider.executeQuery(lsSQL);
@@ -95,6 +97,7 @@ public class EngrDashboard extends TimerTask implements iDashboard{
                             " LEFT JOIN Project b" +
                                 " ON a.sBranchCd = b.sProjCode" +
                         " WHERE cTranStat < 1" +
+                            " AND LEFT(a.sTransNox, 4) LIKE " + SQLUtil.toSQL(poGRider.getBranchCode()+ "%") +
                         " ORDER BY a.dTransact, a.sTransNox";
         
         return poGRider.executeQuery(lsSQL);
@@ -113,6 +116,7 @@ public class EngrDashboard extends TimerTask implements iDashboard{
                             " LEFT JOIN Project c" +
                                 " ON a.sDestinat = c.sProjCode" +
                         " WHERE cTranStat = 0" +
+                            " AND LEFT(a.sTransNox, 4) LIKE " + SQLUtil.toSQL(poGRider.getBranchCode()+ "%") +
                         " ORDER BY a.dTransact, a.sTransNox";
         
         return poGRider.executeQuery(lsSQL);
@@ -131,6 +135,7 @@ public class EngrDashboard extends TimerTask implements iDashboard{
                             " LEFT JOIN Project c" +
                                 " ON a.sDestinat = c.sProjCode" +
                         " WHERE cTranStat = 1" +
+                            " AND LEFT(a.sTransNox, 4) LIKE " + SQLUtil.toSQL(poGRider.getBranchCode()+ "%") +
                         " ORDER BY a.dTransact, a.sTransNox";
         
         return poGRider.executeQuery(lsSQL);

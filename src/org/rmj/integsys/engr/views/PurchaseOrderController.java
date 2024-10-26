@@ -40,6 +40,7 @@ import org.rmj.appdriver.agentfx.callback.IMasterDetail;
 import org.rmj.appdriver.agentfx.ui.showFXDialog;
 import org.rmj.appdriver.constants.TransactionStatus;
 import org.rmj.appdriver.constants.UserRight;
+import org.rmj.engr.parameter.agent.XMCompany;
 import org.rmj.engr.parameter.agent.XMProject;
 import org.rmj.engr.purchasing.agent.XMPurchaseOrder;
 
@@ -51,6 +52,8 @@ public class PurchaseOrderController implements Initializable, IFXML {
     private TextField txtField01;
     @FXML
     private TextField txtField03;
+    @FXML
+    private TextField txtField04;
     @FXML
     private TextField txtField02;
     @FXML
@@ -123,6 +126,7 @@ public class PurchaseOrderController implements Initializable, IFXML {
         /*Add listener to text fields*/
         txtField02.focusedProperty().addListener(txtField_Focus);
         txtField03.focusedProperty().addListener(txtField_Focus);
+        txtField04.focusedProperty().addListener(txtField_Focus);
         txtField06.focusedProperty().addListener(txtField_Focus);
         txtField07.focusedProperty().addListener(txtField_Focus);
         txtField08.focusedProperty().addListener(txtField_Focus);
@@ -137,6 +141,7 @@ public class PurchaseOrderController implements Initializable, IFXML {
         /*Add keypress event for field with search*/
         txtField02.setOnKeyPressed(this::txtField_KeyPressed);
         txtField03.setOnKeyPressed(this::txtField_KeyPressed);
+        txtField04.setOnKeyPressed(this::txtField_KeyPressed);
         txtField06.setOnKeyPressed(this::txtField_KeyPressed);
         txtField07.setOnKeyPressed(this::txtField_KeyPressed);
         txtField08.setOnKeyPressed(this::txtField_KeyPressed);
@@ -224,6 +229,7 @@ public class PurchaseOrderController implements Initializable, IFXML {
         txtField01.setDisable(!lbShow);
         txtField02.setDisable(!lbShow);
         txtField03.setDisable(!lbShow);
+        txtField04.setDisable(!lbShow);
         txtField06.setDisable(!lbShow);
         txtField07.setDisable(!lbShow);
         txtField08.setDisable(!lbShow);
@@ -236,7 +242,7 @@ public class PurchaseOrderController implements Initializable, IFXML {
         txtField50.setDisable(lbShow);
         
         if (lbShow)
-            txtField02.requestFocus();
+            txtField04.requestFocus();
         else
             txtField50.requestFocus();
     }
@@ -471,6 +477,9 @@ public class PurchaseOrderController implements Initializable, IFXML {
             txtField06.setText((String) loSupplier.get("sClientNm"));
             txtField51.setText((String) loSupplier.get("sClientNm"));
         }
+        
+        XMCompany loCompany = poTrans.GetCompany((String)poTrans.getMaster(4), true);
+        if (loCompany != null) txtField04.setText((String) loCompany.getMaster("sCompnyNm"));
 
         XMTerm loTerm = poTrans.GetTerm((String)poTrans.getMaster(8), true);
         if (loTerm != null) txtField08.setText((String) loTerm.getMaster("sDescript"));
@@ -492,6 +501,7 @@ public class PurchaseOrderController implements Initializable, IFXML {
         txtField01.setText("");
         txtField02.setText("");
         txtField03.setText("");
+        txtField04.setText("");
         txtField06.setText("");
         txtField07.setText("");
         txtField08.setText("");
@@ -532,6 +542,9 @@ public class PurchaseOrderController implements Initializable, IFXML {
             case F3:
                 switch (lnIndex){
                 case 2: /*sBranchCd*/
+                case 4: /*sCompnyCd*/
+                    poTrans.SearchMaster(lnIndex, txtField.getText(), false);
+                    break;
                 case 5: /*sDestinat*/
                 case 6: /*sSupplier*/
                 case 8: /*sTermCode*/
@@ -618,7 +631,7 @@ public class PurchaseOrderController implements Initializable, IFXML {
                         txtDetail80.setText(psDescript);
                         txtDetail05.setText((String) loJSON.get("nUnitPrce"));
                     } else {
-                        MsgBox.showOk(poTrans.getErrMsg() + " " + poTrans.getMessage());
+                        MsgBox.showOk(poTrans.getMessage());
                     }
                 }
                 
@@ -736,6 +749,7 @@ public class PurchaseOrderController implements Initializable, IFXML {
     private String psInvTypNm = "";
     private String psTermName = "";
     private String psSupplier = "";
+    private String psCompnyNm = "";
     
     private String psBarCodex = "";
     private String psDescript = "";
@@ -833,6 +847,7 @@ public class PurchaseOrderController implements Initializable, IFXML {
         if(!nv){ /*Lost Focus*/           
             switch (lnIndex){
                 case 2: /*sBranchCd*/
+                case 4: /*sCompnyCd*/
                 case 5: /*sDestinat*/
                 case 6: /*sSupplier*/
                 case 8: /*sTermCode*/
@@ -918,6 +933,10 @@ public class PurchaseOrderController implements Initializable, IFXML {
         case 2:
             XMProject loProject = poTrans.GetProject((String)poTrans.getMaster(fnIndex), true);
             if (loProject != null) txtField02.setText((String) loProject.getMaster("sProjDesc"));
+            break;
+        case 4:
+            XMCompany loCompany = poTrans.GetCompany((String)poTrans.getMaster(fnIndex), true);
+            if (loCompany != null) txtField04.setText((String) loCompany.getMaster("sCompnyNm"));
             break;
         case 6:
             JSONObject loSupplier = poTrans.GetSupplier((String)poTrans.getMaster(fnIndex), true);
